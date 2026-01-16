@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لو خيروك | تحدي القرارات</title>
+    
+    <!-- Fonts: 'Lalezar' for headings, 'Cairo' for text -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Lalezar&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        fun: ['Lalezar', 'cursive'],
+                    },
+                    colors: {
+                        fire: {
+                            light: '#ff7b7b',
+                            DEFAULT: '#ff4757',
+                            dark: '#c0392b',
+                        },
+                        ice: {
+                            light: '#7bed9f', // Actually lets use Blue/Cyan for Ice
+                            DEFAULT: '#3742fa', 
+                            cyan: '#0fb9b1',
+                            dark: '#1e3799',
+                        },
+                        vs: '#2f3542'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-in': 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'vs-spin': 'spinScale 3s infinite linear',
+                    },
+                    keyframes: {
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: 0 },
+                            '100%': { transform: 'scale(1)', opacity: 1 },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        spinScale: {
+                            '0%': { transform: 'rotate(0deg) scale(1)' },
+                            '50%': { transform: 'rotate(180deg) scale(1.1)' },
+                            '100%': { transform: 'rotate(360deg) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@18.2.0",
+                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+                "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            background-color: #2f3542;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Split Background */
+        .split-bg {
+            background: linear-gradient(135deg, #ff4757 50%, #3742fa 50%);
+        }
+        @media (max-width: 768px) {
+            .split-bg {
+                background: linear-gradient(180deg, #ff4757 50%, #3742fa 50%);
+            }
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .text-outline {
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            background: #fff;
+            color: #2f3542;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Lalezar', cursive;
+            font-size: 2.5rem;
+            border: 6px solid #2f3542;
+            box-shadow: 0 0 0 4px #fff, 0 10px 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Flame, Snowflake, Settings, Key, X, 
+            RefreshCw, Share2, Zap, Skull, Laugh, HelpCircle
+        } from 'lucide-react';
+
+        // --- Mock Data (Demo Mode) ---
+        const MOCK_QUESTIONS = {
+            funny: {
+                A: "يكون عندك ذيل أرنب يهز لما تفرح",
+                B: "صوتك يصير مثل بطوط (Donald Duck) لما تعصب"
+            },
+            hard: {
+                A: "تعيش بدون إنترنت للأبد",
+                B: "تعيش بدون مكيف في عز الصيف للأبد"
+            },
+            gross: {
+                A: "تشرب كوب عصير ليمون فيه ملعقة ملح",
+                B: "تاكل سندويتش نوتيلا بالبصل"
+            },
+            embarrassing: {
+                A: "تنشر سجل بحثك في جوجل لكل أهلك",
+                B: "تمشي في مول وأنت لابس بيجامة النوم"
+            }
+        };
+
+        function App() {
+            // State
+            const [category, setCategory] = useState('funny');
+            const [scenario, setScenario] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [selected, setSelected] = useState(null); // 'A' or 'B'
+            const [stats, setStats] = useState({ A: 50, B: 50 }); // Fake stats
+            
+            // Settings
+            const [showSettings, setShowSettings] = useState(false);
+            const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+
+            const CATEGORIES = [
+                { id: 'funny', name: 'مضحك', icon: Laugh, color: 'text-yellow-400' },
+                { id: 'hard', name: 'مستحيل', icon: Zap, color: 'text-red-400' },
+                { id: 'gross', name: 'مقرف', icon: Skull, color: 'text-green-400' },
+                { id: 'embarrassing', name: 'محرج', icon: HelpCircle, color: 'text-purple-400' },
+            ];
+
+            const saveApiKey = (key) => {
+                setApiKey(key);
+                localStorage.setItem('gemini_api_key', key);
+            };
+
+            const generateQuestion = async () => {
+                setLoading(true);
+                setSelected(null);
+                setScenario(null);
+
+                // Demo Mode
+                if (!apiKey) {
+                    setTimeout(() => {
+                        setScenario(MOCK_QUESTIONS[category]);
+                        setStats({ A: Math.floor(Math.random() * 40) + 30, B: 0 }); // B will be calc
+                        setLoading(false);
+                    }, 1500);
+                    return;
+                }
+
+                // AI Prompt
+                const prompt = `أعطني سؤال "لو خيروك" (Would You Rather) جديد ومبتكر.
+                التصنيف: ${category} (Funny, Impossible, Gross, Embarrassing).
+                
+                الشروط:
+                1. الخيارين يجب أن يكونا متناقضين وصعبين/مضحكين.
+                2. باللهجة العامية البيضاء المفهومة.
+                3. بدون مقدمات.
+                
+                صيغة JSON:
+                {
+                    "A": "الخيار الأول",
+                    "B": "الخيار الثاني"
+                }`;
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { responseMimeType: "application/json" }
+                        })
+                    });
+                    const data = await response.json();
+                    const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+                    setScenario(parsed);
+                    setStats({ A: Math.floor(Math.random() * 100), B: 0 });
+                } catch (error) {
+                    setScenario(MOCK_QUESTIONS['funny']); // Fallback
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Initial load
+            useEffect(() => {
+                if (!scenario) generateQuestion();
+            }, []);
+
+            const handleSelect = (choice) => {
+                if (selected) return;
+                setSelected(choice);
+                // Reveal stats animation could go here
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col font-sans overflow-hidden bg-[#2f3542] relative">
+                    
+                    {/* Settings Modal */}
+                    {showSettings && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-bounce-in">
+                            <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-2xl relative border-4 border-[#2f3542]">
+                                <button onClick={() => setShowSettings(false)} className="absolute top-4 left-4 text-gray-400 hover:text-red-500"><X /></button>
+                                <h3 className="text-xl font-black font-fun mb-4 text-[#2f3542]">
+                                    <Key className="inline-block w-5 h-5 ml-2" /> إعدادات اللعبة
+                                </h3>
+                                <input 
+                                    type="password" 
+                                    value={apiKey}
+                                    onChange={(e) => saveApiKey(e.target.value)}
+                                    className="w-full bg-gray-100 border-2 border-gray-300 rounded-xl p-3 text-gray-800 outline-none focus:border-[#ff4757] mb-3"
+                                    placeholder="مفتاح API..."
+                                />
+                                <button onClick={() => setShowSettings(false)} className="w-full bg-[#2f3542] text-white py-3 rounded-xl font-bold hover:bg-black transition-colors font-fun">حفظ وبدء اللعب</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navbar */}
+                    <header className="absolute top-0 w-full p-4 flex justify-between items-center z-40 text-white drop-shadow-md">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-white text-[#2f3542] px-3 py-1 rounded-full font-black font-fun text-xl transform -rotate-3 border-2 border-[#2f3542]">
+                                لو خيروك
+                            </div>
+                        </div>
+                        <button onClick={() => setShowSettings(!showSettings)} className="bg-black/20 p-2 rounded-full hover:bg-black/40 transition-colors">
+                            <Settings className="w-6 h-6" />
+                        </button>
+                    </header>
+
+                    {/* Main Game Area (Split Screen) */}
+                    <main className="flex-1 flex flex-col md:flex-row relative h-screen">
+                        
+                        {/* VS Badge */}
+                        <div className="vs-badge animate-pulse">
+                            VS
+                        </div>
+
+                        {/* Option A (Red/Fire) */}
+                        <div 
+                            className={`
+                                flex-1 bg-fire relative flex flex-col items-center justify-center p-8 transition-all duration-500 cursor-pointer group overflow-hidden
+                                ${selected === 'B' ? 'opacity-30 blur-sm scale-95' : 'hover:flex-grow-[1.1]'}
+                            `}
+                            onClick={() => handleSelect('A')}
+                        >
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-10"></div>
+                            
+                            {/* Content */}
+                            <div className="relative z-10 text-center transform transition-transform group-hover:scale-105">
+                                <Flame className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-lg animate-bounce" />
+                                <h2 className="text-3xl md:text-5xl font-black font-fun leading-tight text-outline mb-4">
+                                    {loading ? "..." : scenario?.A}
+                                </h2>
+                                
+                                {selected && (
+                                    <div className="animate-bounce-in mt-4">
+                                        <div className="text-6xl font-black">{selected === 'A' ? stats.A : 100 - stats.A}%</div>
+                                        <div className="text-sm font-bold opacity-80">اختاروا هذا</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Option B (Blue/Ice) */}
+                        <div 
+                            className={`
+                                flex-1 bg-ice relative flex flex-col items-center justify-center p-8 transition-all duration-500 cursor-pointer group overflow-hidden
+                                ${selected === 'A' ? 'opacity-30 blur-sm scale-95' : 'hover:flex-grow-[1.1]'}
+                            `}
+                            onClick={() => handleSelect('B')}
+                        >
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                            
+                            {/* Content */}
+                            <div className="relative z-10 text-center transform transition-transform group-hover:scale-105">
+                                <Snowflake className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-lg animate-pulse" />
+                                <h2 className="text-3xl md:text-5xl font-black font-fun leading-tight text-outline mb-4">
+                                    {loading ? "..." : scenario?.B}
+                                </h2>
+
+                                {selected && (
+                                    <div className="animate-bounce-in mt-4">
+                                        <div className="text-6xl font-black">{selected === 'B' ? 100 - stats.A : stats.A}%</div>
+                                        <div className="text-sm font-bold opacity-80">اختاروا هذا</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                    </main>
+
+                    {/* Controls Footer */}
+                    <footer className="absolute bottom-0 w-full p-4 md:p-6 z-40 bg-gradient-to-t from-[#2f3542] to-transparent">
+                        <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
+                            
+                            {/* Categories */}
+                            <div className="flex flex-wrap justify-center gap-2 bg-black/40 p-2 rounded-2xl backdrop-blur-md">
+                                {CATEGORIES.map(cat => (
+                                    <button 
+                                        key={cat.id}
+                                        onClick={() => { setCategory(cat.id); setSelected(null); generateQuestion(); }}
+                                        className={`
+                                            px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all
+                                            ${category === cat.id ? 'bg-white text-black shadow-lg scale-105' : 'text-white/70 hover:bg-white/10'}
+                                        `}
+                                    >
+                                        <cat.icon className={`w-4 h-4 ${category === cat.id ? cat.color : ''}`} />
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Next Button */}
+                            <button 
+                                onClick={generateQuestion}
+                                disabled={loading}
+                                className={`
+                                    bg-white text-[#2f3542] px-8 py-3 rounded-full font-black font-fun text-xl shadow-[0_5px_0_#000] active:shadow-none active:translate-y-1 transition-all flex items-center gap-2
+                                    ${loading ? 'opacity-80 cursor-wait' : 'hover:scale-105'}
+                                `}
+                            >
+                                {loading ? <RefreshCw className="animate-spin w-6 h-6" /> : 'تحدي جديد 🎲'}
+                            </button>
+
+                        </div>
+                    </footer>
+
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

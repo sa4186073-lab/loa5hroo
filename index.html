@@ -2,376 +2,1409 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لو خيروك | تحدي القرارات</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الذيب - الطور الثالث</title>
+    <meta name="theme-color" content="#050505">
     
-    <!-- Fonts: 'Lalezar' for headings, 'Cairo' for text -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Lalezar&display=swap" rel="stylesheet">
+    <!-- Arabic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                        fun: ['Lalezar', 'cursive'],
-                    },
-                    colors: {
-                        fire: {
-                            light: '#ff7b7b',
-                            DEFAULT: '#ff4757',
-                            dark: '#c0392b',
-                        },
-                        ice: {
-                            light: '#7bed9f', // Actually lets use Blue/Cyan for Ice
-                            DEFAULT: '#3742fa', 
-                            cyan: '#0fb9b1',
-                            dark: '#1e3799',
-                        },
-                        vs: '#2f3542'
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bounce-in': 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                        'vs-spin': 'spinScale 3s infinite linear',
-                    },
-                    keyframes: {
-                        bounceIn: {
-                            '0%': { transform: 'scale(0.3)', opacity: 0 },
-                            '100%': { transform: 'scale(1)', opacity: 1 },
-                        },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
-                        },
-                        spinScale: {
-                            '0%': { transform: 'rotate(0deg) scale(1)' },
-                            '50%': { transform: 'rotate(180deg) scale(1.1)' },
-                            '100%': { transform: 'rotate(360deg) scale(1)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@18.2.0",
-                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-                "lucide-react": "https://esm.sh/lucide-react@0.263.1"
-            }
-        }
-    </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <style>
+        :root {
+            /* Gold Palette */
+            --gold-base: #D4AF37;
+            --gold-light: #FEEBC8;
+            --gold-dark: #8A6E2F;
+            --gold-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            
+            /* Black Plastic Palette */
+            --plastic-black: #0a0a0a;
+            --plastic-highlight: rgba(255, 255, 255, 0.08);
+            --plastic-shadow: rgba(0, 0, 0, 0.8);
+            
+            --bg-deep: #050505;
+            --text-main: #EAEAEA;
+            --text-gold: #FFD700;
+
+            /* Tone Colors */
+            --halal-green: #00ff88;
+            --mix-blue: #00ccff;
+            --spicy-red: #ff0044;
+        }
+
         body {
-            background-color: #2f3542;
-            color: white;
-            overflow-x: hidden;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(60, 60, 60, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(80, 70, 30, 0.1) 0%, transparent 25%);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+        
+        body.loaded {
+            overflow: auto;
         }
 
-        /* Split Background */
-        .split-bg {
-            background: linear-gradient(135deg, #ff4757 50%, #3742fa 50%);
-        }
-        @media (max-width: 768px) {
-            .split-bg {
-                background: linear-gradient(180deg, #ff4757 50%, #3742fa 50%);
-            }
-        }
-
-        .card-shadow {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .text-outline {
-            text-shadow: 2px 2px 0 #000;
+        /* LOADING SCREEN STYLES */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #050505;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1), visibility 0.8s;
         }
 
-        .vs-badge {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 20;
-            background: #fff;
-            color: #2f3542;
+        #loading-screen.hidden-loader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .wolf-logo-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .wolf-spinner {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            width: 80px;
-            height: 80px;
+            border: 3px solid transparent;
+            border-top-color: var(--gold-base);
+            border-right-color: var(--gold-dark);
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .wolf-spinner::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #8A6E2F;
+            animation: spin 3s linear infinite reverse;
+        }
+
+        .loader-title {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            opacity: 0;
+            animation: fadeUp 1s ease-out forwards 0.3s;
+        }
+
+        .loader-subtitle {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out forwards 0.6s;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+
+        /* Main Device Container */
+        .unit-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--plastic-black);
+            background: linear-gradient(145deg, #111111, #080808);
+            border-radius: 24px;
+            border: 2px solid #1a1a1a;
+            background-clip: padding-box;
+            position: relative;
+            padding: 25px;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.9),
+                0 0 0 1px #000, 
+                0 0 0 3px #3a2e10, 
+                0 0 20px rgba(179, 135, 40, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 16px; 
+            overflow: hidden;
+            margin-top: 10px;
+            margin-bottom: 40px;
+            opacity: 0; /* Hidden initially */
+            transform: scale(0.95);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Show container when loaded */
+        .loaded .unit-container {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .unit-container::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.8));
+        }
+
+        /* Improved Help Button */
+        .help-btn {
+            position: absolute;
+            top: 5px;
+            right: 0px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 2px solid var(--gold-base);
+            color: var(--gold-base);
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.2rem;
+            font-family: 'Cairo', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            z-index: 10;
+        }
+        .help-btn:hover { 
+            background: var(--gold-base); 
+            color: #000;
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        /* Credit Wallet */
+        .wallet-display {
+            position: absolute;
+            top: 5px;
+            left: 0px;
+            background: #111;
+            border: 1px solid #333;
+            color: var(--text-gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .wallet-display:hover {
+            border-color: var(--gold-base);
+            background: #222;
+        }
+        .coin-icon {
+            color: var(--gold-base);
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.6);
+        }
+
+        .status-light {
+            font-size: 0.75rem;
+            color: #555;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Lalezar', cursive;
-            font-size: 2.5rem;
-            border: 6px solid #2f3542;
-            box-shadow: 0 0 0 4px #fff, 0 10px 20px rgba(0,0,0,0.5);
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 6px; height: 6px;
+            background: var(--gold-base);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--gold-base);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* Labels */
+        label {
+            display: block;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--gold-base);
+            margin-bottom: 6px;
+        }
+
+        /* Inputs & Textareas */
+        textarea, select, input {
+            width: 100%;
+            background: #050505;
+            border: 1px solid #333;
+            color: #ddd;
+            padding: 12px;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            border-radius: 12px;
+            transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.9), inset -1px -1px 2px rgba(255,255,255,0.05);
+        }
+
+        textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--gold-dark);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1), inset 2px 2px 5px rgba(0,0,0,0.9);
+            color: #fff;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        /* Mode Switch (Tabs) */
+        .mode-switch {
+            display: flex;
+            background: #000;
+            border-radius: 14px;
+            padding: 4px;
+            box-shadow: inset 1px 1px 5px rgba(0,0,0,0.8);
+            border: 1px solid #222;
+            gap: 2px;
+            overflow-x: auto;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #666;
+            padding: 10px 2px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            transition: 0.3s;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            min-width: 60px;
+        }
+        
+        .mode-btn i { font-size: 1.1rem; }
+        .mode-btn:hover { color: #aaa; }
+
+        .mode-btn.active {
+            background: var(--gold-gradient);
+            color: #1a0f00;
+            box-shadow: 0 2px 10px rgba(189, 149, 63, 0.3);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #333;
+            background: linear-gradient(180deg, #111, #0a0a0a);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-zone:hover { border-color: var(--gold-dark); background: linear-gradient(180deg, #151515, #0f0f0f); }
+        .upload-zone i { color: #444; transition: 0.3s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+        .upload-zone:hover i { color: var(--gold-base); }
+        .upload-text { margin-top: 8px; font-size: 0.85rem; color: #888; font-weight: 600; }
+
+        #preview-box {
+            display: none;
+            margin-top: 15px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--gold-dark);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        #img-preview { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+
+        /* PHASE 3: 3-Way Tone Toggle (RTL CORRECTED) */
+        .tone-toggle-container {
+            display: flex;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 50px;
+            position: relative;
+            height: 44px;
+            margin-top: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tone-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 800;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            color: #555;
+            gap: 4px;
+        }
+
+        .tone-slider {
+            position: absolute;
+            top: 4px; bottom: 4px;
+            width: calc(33.33% - 4px);
+            background: linear-gradient(135deg, #004d00, #008f00); /* Default Halal Green */
+            border-radius: 40px;
+            transition: 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* States for Toggle - Corrected for RTL */
+        /* Note: In RTL, right:4px is the starting point (Halal) */
+        
+        /* Halal (First item - Right side in RTL) */
+        .tone-toggle-container[data-state="halal"] .tone-slider {
+            right: 4px;
+            left: auto;
+            background: linear-gradient(135deg, #004d00, #008f00);
+        }
+        
+        /* Mix (Middle) */
+        .tone-toggle-container[data-state="mix"] .tone-slider {
+            right: 33.33%;
+            left: auto;
+            background: linear-gradient(135deg, #0077b6, #00b4d8); /* Mix Blue */
+        }
+        
+        /* Spicy (Last item - Left side in RTL) */
+        .tone-toggle-container[data-state="spicy"] .tone-slider {
+            right: 66.66%;
+            left: 4px;
+            background: linear-gradient(135deg, #8f0000, #ff0000); /* Spicy Red */
+        }
+
+        /* Text Highlighting */
+        .tone-toggle-container[data-state="halal"] .tone-option:nth-child(2) { color: #fff; text-shadow: 0 0 5px var(--halal-green); }
+        .tone-toggle-container[data-state="mix"] .tone-option:nth-child(3) { color: #fff; text-shadow: 0 0 5px var(--mix-blue); }
+        .tone-toggle-container[data-state="spicy"] .tone-option:nth-child(4) { color: #fff; text-shadow: 0 0 5px var(--spicy-red); }
+
+
+        /* Results */
+        .flex-row { display: flex; gap: 10px; }
+
+        .btn-generate {
+            background: var(--gold-gradient);
+            border: none;
+            color: #2b1d00;
+            padding: 16px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2), inset 0 1px 0 rgba(255,255,255,0.4);
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 10px; position: relative; overflow: hidden; width: 100%;
+        }
+
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
+        .btn-generate:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(212, 175, 55, 0.2); }
+        .btn-generate:disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.8; }
+
+        .results-area { display: flex; flex-direction: column; gap: 12px; padding-top: 5px; }
+
+        .rizz-card {
+            background: linear-gradient(145deg, #161616, #0f0f0f);
+            border-right: 3px solid var(--gold-base);
+            border-radius: 12px;
+            padding: 15px 15px 15px 50px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            border-top: 1px solid #222;
+            border-left: 1px solid #222;
+            border-bottom: 1px solid #222;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rizz-card:hover {
+            border-color: #fff;
+            transform: translateX(-3px);
+            background: #1a1a1a;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+        }
+
+        .rizz-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ddd;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Phase 3: Emoji Strategy Display */
+        .emoji-strategy {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align right for Arabic */
+            gap: 8px;
+            border: 1px dashed #333;
+        }
+        
+        .emoji-combo {
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 50%; left: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            color: var(--gold-base);
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .action-btn:hover { background: var(--gold-base); color: #000; }
+        .action-btn.playing { animation: pulse 1s infinite; background: var(--gold-base); color: #000; }
+        
+        /* Rizz Meter Styles */
+        .rating-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold-base);
+            text-align: center;
+            margin-bottom: 5px;
+            font-family: 'Cairo', sans-serif;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .rating-feedback { font-size: 0.9rem; color: #bbb; text-align: center; border-top: 1px solid #333; padding-top: 10px; margin-top: 5px; }
+
+        .spinner {
+            width: 20px; height: 20px;
+            border: 3px solid rgba(80, 50, 0, 0.3);
+            border-top-color: #583e00;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(-360deg); } }
+
+        #toast {
+            position: fixed;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #fff, #eee);
+            color: #000;
+            padding: 12px 30px;
+            font-weight: 700;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            border: 2px solid var(--gold-base);
+            display: flex; align-items: center; gap: 8px;
+            white-space: nowrap;
+        }
+        #toast.visible { transform: translateX(-50%) translateY(0); }
+
+        .hidden { display: none !important; }
+        .clear-img {
+            position: absolute; top: 5px; left: 5px;
+            background: rgba(0,0,0,0.7); color: #fff;
+            width: 28px; height: 28px; border-radius: 50%;
+            cursor: pointer; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 1rem center;
+            background-size: 1em;
+            padding-left: 2.5rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 999;
+            display: none;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background: linear-gradient(145deg, #111111, #080808);
+            border: 2px solid var(--gold-dark);
+            width: 100%; max-width: 350px;
+            border-radius: 20px;
+            padding: 25px;
+            color: #ddd;
+            text-align: right;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .modal-title {
+            color: var(--gold-base);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .help-item {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .help-item:last-child { border-bottom: none; }
+        .help-icon { color: var(--gold-base); width: 25px; display: inline-block; text-align: center; margin-left: 5px;}
+        .help-strong { color: #fff; font-weight: 700; font-family: 'Cairo', sans-serif;}
+        .close-modal {
+            position: absolute; top: 15px; left: 15px;
+            color: #666; cursor: pointer; font-size: 1.2rem;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: #1a1a1a;
+        }
+        .close-modal:hover { color: #fff; background: #333; }
+
+        /* SHOP Styles */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .shop-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .shop-item:hover {
+            border-color: var(--gold-base);
+            transform: translateY(-5px);
+        }
+        .shop-coins {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .shop-price {
+            color: var(--gold-base);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .shop-btn {
+            background: var(--gold-gradient);
+            border: none;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            margin-top: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* SHARE CARD STYLES */
+        .share-canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        #share-canvas-img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border: 2px solid var(--gold-dark);
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { 
-            Flame, Snowflake, Settings, Key, X, 
-            RefreshCw, Share2, Zap, Skull, Laugh, HelpCircle
-        } from 'lucide-react';
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="wolf-logo-container">
+            <div class="wolf-spinner"></div>
+        </div>
+        <h1 class="loader-title">الذيب</h1>
+        <div class="loader-subtitle">الطور الثالث v3.0</div>
+    </div>
 
-        // --- Mock Data (Demo Mode) ---
-        const MOCK_QUESTIONS = {
-            funny: {
-                A: "يكون عندك ذيل أرنب يهز لما تفرح",
-                B: "صوتك يصير مثل بطوط (Donald Duck) لما تعصب"
-            },
-            hard: {
-                A: "تعيش بدون إنترنت للأبد",
-                B: "تعيش بدون مكيف في عز الصيف للأبد"
-            },
-            gross: {
-                A: "تشرب كوب عصير ليمون فيه ملعقة ملح",
-                B: "تاكل سندويتش نوتيلا بالبصل"
-            },
-            embarrassing: {
-                A: "تنشر سجل بحثك في جوجل لكل أهلك",
-                B: "تمشي في مول وأنت لابس بيجامة النوم"
-            }
+    <div class="unit-container">
+        <header>
+            <div class="status-light">
+                <div class="status-dot"></div>
+                v3.0 الطور الثالث
+            </div>
+            
+            <div class="wallet-display" onclick="openShop()">
+                <span id="credit-count">5</span> <i class="fas fa-coins coin-icon"></i>
+            </div>
+
+            <h1>الذيب</h1>
+            <button class="help-btn" onclick="toggleHelp()">?</button>
+        </header>
+
+        <!-- Mode Toggle -->
+        <div class="mode-switch">
+            <button class="mode-btn active" onclick="setMode('image')" id="btn-img">
+                <i class="fas fa-image"></i> تحليل صورة
+            </button>
+            <button class="mode-btn" onclick="setMode('story')" id="btn-story">
+                <i class="fab fa-instagram"></i> ستوري
+            </button>
+            <button class="mode-btn" onclick="setMode('ghost')" id="btn-ghost">
+                <i class="fas fa-ghost"></i> إنعاش
+            </button>
+            <button class="mode-btn" onclick="setMode('text')" id="btn-txt">
+                <i class="fas fa-feather-alt"></i> نص
+            </button>
+            <button class="mode-btn" onclick="setMode('rate')" id="btn-rate">
+                <i class="fas fa-star-half-alt"></i> تقييم
+            </button>
+        </div>
+
+        <!-- Inputs -->
+        <div class="control-group">
+            
+            <!-- Image Input -->
+            <div id="input-image">
+                <div class="upload-zone" onclick="document.getElementById('file-field').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 32px; margin-bottom: 8px;"></i>
+                    <div class="upload-text">اضغط لرفع صورة المحادثة</div>
+                    <input type="file" id="file-field" hidden accept="image/*" onchange="handleFile(this)">
+                </div>
+                <div id="preview-box">
+                    <img id="img-preview">
+                    <div class="clear-img" onclick="clearImage()"><i class="fas fa-times"></i></div>
+                </div>
+            </div>
+
+            <!-- Story Input -->
+            <div id="input-story" class="hidden">
+                <label>نوع الستوري</label>
+                <select id="story-type">
+                    <option value="selfie">سيلفي / صورة شخصية</option>
+                    <option value="coffee_food">قهوة / أكل / مطعم</option>
+                    <option value="gym">نادي / رياضة</option>
+                    <option value="view">منظر طبيعي / جو / سفر</option>
+                    <option value="music">أغنية / موسيقى</option>
+                    <option value="cat_dog">حيوان أليف (قطة/كلب)</option>
+                    <option value="meme">ميم / ضحك</option>
+                </select>
+                <label style="margin-top:10px">تفاصيل إضافية (اختياري)</label>
+                <textarea id="story-context" placeholder="مثال: لابسة فستان أحمر، أو تشرب قهوة باردة..."></textarea>
+            </div>
+
+            <!-- Ghostbuster Input -->
+            <div id="input-ghost" class="hidden">
+                <label>آخر رسالة أرسلتها (عشان نعرف السياق)</label>
+                <textarea id="ghost-last-msg" placeholder="وش قلت آخر شيء؟..."></textarea>
+                
+                <label style="margin-top:10px">صار لهم كم ما ردوا؟</label>
+                <select id="ghost-time">
+                    <option value="24h">24 ساعة (خفيف)</option>
+                    <option value="days">يومين - 3 أيام (متوسط)</option>
+                    <option value="week">أسبوع أو أكثر (ميت)</option>
+                </select>
+            </div>
+
+            <!-- Text Generation Input -->
+            <div id="input-text" class="hidden">
+                <textarea id="text-field" placeholder="انسخ رسالتها هنا، أو صف الموقف..."></textarea>
+            </div>
+
+            <!-- Rizz Meter Input -->
+            <div id="input-rate" class="hidden">
+                <label>رسالتك المقترحة:</label>
+                <textarea id="rate-field" placeholder="اكتب الرد لتقييمه..."></textarea>
+            </div>
+        </div>
+
+        <!-- Phase 3: 3-Way Tone Toggle -->
+        <div class="control-group" id="tone-control-group">
+            <label style="margin-bottom: 2px;">نمط الرد</label>
+            <div class="tone-toggle-container" id="tone-toggle" data-state="mix">
+                <div class="tone-slider" id="tone-slider"></div>
+                <div class="tone-option" onclick="setTone('halal')">🕌 حلال</div>
+                <div class="tone-option" onclick="setTone('mix')">⚖️ مكس</div>
+                <div class="tone-option" onclick="setTone('spicy')">🌶️ سبايسي</div>
+            </div>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="control-group">
+            <div class="flex-row">
+                <div style="flex: 1;">
+                    <label>الأسلوب</label>
+                    <select id="vibe">
+                        <option value="smooth">جذاب</option>
+                        <option value="funny">خفيف دم</option>
+                        <option value="mysterious">ثقيل</option>
+                        <option value="bold">جريء</option>
+                        <option value="poetry">شاعر</option>
+                        <option value="natural">رد طبيعي</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>اللهجة</label>
+                    <select id="dialect">
+                        <option value="saudi">سعودي / خليجي</option>
+                        <option value="yemeni">يمني</option>
+                        <option value="egyptian">مصري</option>
+                        <option value="levantine">شامي</option>
+                        <option value="iraqi">عراقي</option>
+                        <option value="maghrebi">مغاربي</option>
+                        <option value="white">لهجة بيضاء</option>
+                        <option value="english">English / انجليزي</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px;" id="objective-container">
+                <label>الهدف</label>
+                <select id="objective">
+                    <option value="opener">كسر الجليد / بداية</option>
+                    <option value="reply">رد ذكي على رسالة</option>
+                    <option value="comment">تعليق على صورة</option>
+                    <option value="ask_out">دعوة للخروج</option>
+                    <option value="tease">قصف جبهة / مزاح</option>
+                    <option value="fix_it">ترقيع / اعتذار ذكي</option>
+                    <option value="close_deal">طلب السناب / الرقم</option>
+                    <option value="compliment_taste">مدح الذوق (لبس/مكان)</option>
+                    <option value="exit_gracefully">إنهاء بأسلوب (وأنت في القمة)</option>
+                    <option value="occasion">مباركة (غير تقليدية)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-generate" onclick="generateRizz()" id="go-btn">
+            <span id="btn-text">توليد الردود (1 عملة)</span>
+            <div class="spinner" id="spinner"></div>
+        </button>
+
+        <div id="results" class="results-area"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal-overlay" onclick="toggleHelp()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="close-modal" onclick="toggleHelp()"><i class="fas fa-times"></i></div>
+            <div class="modal-title"><i class="fas fa-info-circle"></i> كيف تستخدم "الذيب"</div>
+            
+            <div class="help-item">
+                <span class="help-icon">📸</span> <span class="help-strong">تحليل صورة:</span> ارفع سكرين شوت للمحادثة، الذيب بيقراها ويعطيك أفضل رد.
+            </div>
+            <div class="help-item">
+                <span class="help-icon">📱</span> <span class="help-strong">رد ستوري:</span> اختر نوع الستوري (سيلفي، أكل، جيم..) والذيب بيعطيك رد يفتح سالفة.
+            </div>
+            <div class="help-item">
+                <span class="help-icon">👻</span> <span class="help-strong">إنعاش:</span> سحبوا عليك؟ الذيب يعطيك رسالة ترجع المحادثة للحياة بكرامة.
+            </div>
+            <div class="help-item">
+                <span class="help-icon">✍️</span> <span class="help-strong">نص:</span> انسخ الكلام والصقه، أو اكتب وصف للموقف.
+            </div>
+            <div class="help-item">
+                <span class="help-icon">⚖️</span> <span class="help-strong">مكس:</span> نمط رد جديد متوازن (بين الحلال والسبايسي) ينفع لأغلب الأوقات.
+            </div>
+            <div class="help-item">
+                <span class="help-icon">💰</span> <span class="help-strong">العملات:</span> كل خدمة لها سعر. تقدر تشحن من المتجر.
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="modal-overlay" onclick="closeShop()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="close-modal" onclick="closeShop()"><i class="fas fa-times"></i></div>
+            <div class="modal-title"><i class="fas fa-shopping-cart"></i> متجر الذيب</div>
+            <p style="text-align: center; color: #888; font-size: 0.85rem;">اشحن رصيدك واستمر في اللعبة</p>
+            
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <div class="shop-coins">10</div>
+                    <div class="shop-price">9.99 ريال</div>
+                    <button class="shop-btn" onclick="buyCredits(10)">شراء</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-coins">50</div>
+                    <div class="shop-price">39.99 ريال</div>
+                    <button class="shop-btn" onclick="buyCredits(50)">شراء</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-coins">100</div>
+                    <div class="shop-price">69.99 ريال</div>
+                    <button class="shop-btn" onclick="buyCredits(100)">شراء</button>
+                </div>
+                <div class="shop-item" style="border-color: var(--gold-base);">
+                    <div class="shop-coins">∞</div>
+                    <div class="shop-price">اشتراك شهري</div>
+                    <button class="shop-btn" onclick="buyCredits(999)">اشتراك</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHARE CARD MODAL -->
+    <div id="share-modal" class="modal-overlay" onclick="closeShareModal()">
+        <div class="modal-content" style="text-align: center;" onclick="event.stopPropagation()">
+            <div class="close-modal" onclick="closeShareModal()"><i class="fas fa-times"></i></div>
+            <div class="modal-title" style="justify-content: center;"><i class="fas fa-share-alt"></i> جاهزة للمشاركة</div>
+            <div class="share-canvas-container">
+                <img id="share-canvas-img" alt="Share Card">
+            </div>
+            <p style="margin-top: 15px; color: var(--gold-base); font-size: 0.9rem;">اضغط مطولاً على الصورة لحفظها</p>
+        </div>
+    </div>
+
+    <div id="toast"><i class="fas fa-clipboard-check"></i> تم نسخ النص بنجاح</div>
+
+    <script>
+        // CONFIG
+        const apiKey = ""; // Runtime key
+        let currentMode = 'image';
+        let base64Data = "";
+        let currentTone = "mix"; // Default tone
+        
+        // PAYG Logic
+        let credits = parseInt(localStorage.getItem('wolf_credits')) || 5;
+        const COSTS = {
+            image: 3,
+            text: 1,
+            rate: 1,
+            story: 1,
+            ghost: 1
         };
 
-        function App() {
-            // State
-            const [category, setCategory] = useState('funny');
-            const [scenario, setScenario] = useState(null);
-            const [loading, setLoading] = useState(false);
-            const [selected, setSelected] = useState(null); // 'A' or 'B'
-            const [stats, setStats] = useState({ A: 50, B: 50 }); // Fake stats
-            
-            // Settings
-            const [showSettings, setShowSettings] = useState(false);
-            const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+        // Initialize
+        document.getElementById('credit-count').innerText = credits;
+        updateButtonCost();
 
-            const CATEGORIES = [
-                { id: 'funny', name: 'مضحك', icon: Laugh, color: 'text-yellow-400' },
-                { id: 'hard', name: 'مستحيل', icon: Zap, color: 'text-red-400' },
-                { id: 'gross', name: 'مقرف', icon: Skull, color: 'text-green-400' },
-                { id: 'embarrassing', name: 'محرج', icon: HelpCircle, color: 'text-purple-400' },
-            ];
+        // --- LOADING SCREEN ---
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden-loader');
+                document.body.classList.add('loaded');
+            }, 2500); 
+        };
 
-            const saveApiKey = (key) => {
-                setApiKey(key);
-                localStorage.setItem('gemini_api_key', key);
-            };
-
-            const generateQuestion = async () => {
-                setLoading(true);
-                setSelected(null);
-                setScenario(null);
-
-                // Demo Mode
-                if (!apiKey) {
-                    setTimeout(() => {
-                        setScenario(MOCK_QUESTIONS[category]);
-                        setStats({ A: Math.floor(Math.random() * 40) + 30, B: 0 }); // B will be calc
-                        setLoading(false);
-                    }, 1500);
-                    return;
-                }
-
-                // AI Prompt
-                const prompt = `أعطني سؤال "لو خيروك" (Would You Rather) جديد ومبتكر.
-                التصنيف: ${category} (Funny, Impossible, Gross, Embarrassing).
-                
-                الشروط:
-                1. الخيارين يجب أن يكونا متناقضين وصعبين/مضحكين.
-                2. باللهجة العامية البيضاء المفهومة.
-                3. بدون مقدمات.
-                
-                صيغة JSON:
-                {
-                    "A": "الخيار الأول",
-                    "B": "الخيار الثاني"
-                }`;
-
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { responseMimeType: "application/json" }
-                        })
-                    });
-                    const data = await response.json();
-                    const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
-                    setScenario(parsed);
-                    setStats({ A: Math.floor(Math.random() * 100), B: 0 });
-                } catch (error) {
-                    setScenario(MOCK_QUESTIONS['funny']); // Fallback
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            // Initial load
-            useEffect(() => {
-                if (!scenario) generateQuestion();
-            }, []);
-
-            const handleSelect = (choice) => {
-                if (selected) return;
-                setSelected(choice);
-                // Reveal stats animation could go here
-            };
-
-            return (
-                <div className="min-h-screen flex flex-col font-sans overflow-hidden bg-[#2f3542] relative">
-                    
-                    {/* Settings Modal */}
-                    {showSettings && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-bounce-in">
-                            <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-2xl relative border-4 border-[#2f3542]">
-                                <button onClick={() => setShowSettings(false)} className="absolute top-4 left-4 text-gray-400 hover:text-red-500"><X /></button>
-                                <h3 className="text-xl font-black font-fun mb-4 text-[#2f3542]">
-                                    <Key className="inline-block w-5 h-5 ml-2" /> إعدادات اللعبة
-                                </h3>
-                                <input 
-                                    type="password" 
-                                    value={apiKey}
-                                    onChange={(e) => saveApiKey(e.target.value)}
-                                    className="w-full bg-gray-100 border-2 border-gray-300 rounded-xl p-3 text-gray-800 outline-none focus:border-[#ff4757] mb-3"
-                                    placeholder="مفتاح API..."
-                                />
-                                <button onClick={() => setShowSettings(false)} className="w-full bg-[#2f3542] text-white py-3 rounded-xl font-bold hover:bg-black transition-colors font-fun">حفظ وبدء اللعب</button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Navbar */}
-                    <header className="absolute top-0 w-full p-4 flex justify-between items-center z-40 text-white drop-shadow-md">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-white text-[#2f3542] px-3 py-1 rounded-full font-black font-fun text-xl transform -rotate-3 border-2 border-[#2f3542]">
-                                لو خيروك
-                            </div>
-                        </div>
-                        <button onClick={() => setShowSettings(!showSettings)} className="bg-black/20 p-2 rounded-full hover:bg-black/40 transition-colors">
-                            <Settings className="w-6 h-6" />
-                        </button>
-                    </header>
-
-                    {/* Main Game Area (Split Screen) */}
-                    <main className="flex-1 flex flex-col md:flex-row relative h-screen">
-                        
-                        {/* VS Badge */}
-                        <div className="vs-badge animate-pulse">
-                            VS
-                        </div>
-
-                        {/* Option A (Red/Fire) */}
-                        <div 
-                            className={`
-                                flex-1 bg-fire relative flex flex-col items-center justify-center p-8 transition-all duration-500 cursor-pointer group overflow-hidden
-                                ${selected === 'B' ? 'opacity-30 blur-sm scale-95' : 'hover:flex-grow-[1.1]'}
-                            `}
-                            onClick={() => handleSelect('A')}
-                        >
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-10"></div>
-                            
-                            {/* Content */}
-                            <div className="relative z-10 text-center transform transition-transform group-hover:scale-105">
-                                <Flame className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-lg animate-bounce" />
-                                <h2 className="text-3xl md:text-5xl font-black font-fun leading-tight text-outline mb-4">
-                                    {loading ? "..." : scenario?.A}
-                                </h2>
-                                
-                                {selected && (
-                                    <div className="animate-bounce-in mt-4">
-                                        <div className="text-6xl font-black">{selected === 'A' ? stats.A : 100 - stats.A}%</div>
-                                        <div className="text-sm font-bold opacity-80">اختاروا هذا</div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Option B (Blue/Ice) */}
-                        <div 
-                            className={`
-                                flex-1 bg-ice relative flex flex-col items-center justify-center p-8 transition-all duration-500 cursor-pointer group overflow-hidden
-                                ${selected === 'A' ? 'opacity-30 blur-sm scale-95' : 'hover:flex-grow-[1.1]'}
-                            `}
-                            onClick={() => handleSelect('B')}
-                        >
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                            
-                            {/* Content */}
-                            <div className="relative z-10 text-center transform transition-transform group-hover:scale-105">
-                                <Snowflake className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-lg animate-pulse" />
-                                <h2 className="text-3xl md:text-5xl font-black font-fun leading-tight text-outline mb-4">
-                                    {loading ? "..." : scenario?.B}
-                                </h2>
-
-                                {selected && (
-                                    <div className="animate-bounce-in mt-4">
-                                        <div className="text-6xl font-black">{selected === 'B' ? 100 - stats.A : stats.A}%</div>
-                                        <div className="text-sm font-bold opacity-80">اختاروا هذا</div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                    </main>
-
-                    {/* Controls Footer */}
-                    <footer className="absolute bottom-0 w-full p-4 md:p-6 z-40 bg-gradient-to-t from-[#2f3542] to-transparent">
-                        <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
-                            
-                            {/* Categories */}
-                            <div className="flex flex-wrap justify-center gap-2 bg-black/40 p-2 rounded-2xl backdrop-blur-md">
-                                {CATEGORIES.map(cat => (
-                                    <button 
-                                        key={cat.id}
-                                        onClick={() => { setCategory(cat.id); setSelected(null); generateQuestion(); }}
-                                        className={`
-                                            px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all
-                                            ${category === cat.id ? 'bg-white text-black shadow-lg scale-105' : 'text-white/70 hover:bg-white/10'}
-                                        `}
-                                    >
-                                        <cat.icon className={`w-4 h-4 ${category === cat.id ? cat.color : ''}`} />
-                                        {cat.name}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Next Button */}
-                            <button 
-                                onClick={generateQuestion}
-                                disabled={loading}
-                                className={`
-                                    bg-white text-[#2f3542] px-8 py-3 rounded-full font-black font-fun text-xl shadow-[0_5px_0_#000] active:shadow-none active:translate-y-1 transition-all flex items-center gap-2
-                                    ${loading ? 'opacity-80 cursor-wait' : 'hover:scale-105'}
-                                `}
-                            >
-                                {loading ? <RefreshCw className="animate-spin w-6 h-6" /> : 'تحدي جديد 🎲'}
-                            </button>
-
-                        </div>
-                    </footer>
-
-                </div>
-            );
+        // --- SHOP & CREDITS ---
+        function openShop() {
+            document.getElementById('shop-modal').style.display = 'flex';
+        }
+        function closeShop() {
+            document.getElementById('shop-modal').style.display = 'none';
+        }
+        function buyCredits(amount) {
+            credits += amount;
+            localStorage.setItem('wolf_credits', credits);
+            document.getElementById('credit-count').innerText = credits;
+            closeShop();
+            showToast(`تم إضافة ${amount} عملة بنجاح!`);
+            updateButtonCost();
+        }
+        function updateButtonCost() {
+            const cost = COSTS[currentMode];
+            const btn = document.getElementById('btn-text');
+            if(currentMode === 'rate') {
+                btn.innerText = `تقييم (تكلفة: ${cost} عملة)`;
+            } else if (currentMode === 'ghost') {
+                btn.innerText = `إنعاش المحادثة (تكلفة: ${cost} عملة)`;
+            } else {
+                btn.innerText = `توليد الردود (تكلفة: ${cost} عملة)`;
+            }
         }
 
-        const root = createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // --- HELP MODAL ---
+        function toggleHelp() {
+            const modal = document.getElementById('help-modal');
+            if(modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // --- MODE SWITCHING ---
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            
+            // Reset inputs visibility
+            const inputs = ['input-image', 'input-text', 'input-rate', 'input-story', 'input-ghost'];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            
+            const btnText = document.getElementById('btn-text');
+            const toneGroup = document.getElementById('tone-control-group');
+            const objectiveContainer = document.getElementById('objective-container');
+
+            // Default Visibility: Show Tone & Objective
+            if(toneGroup) toneGroup.style.display = 'flex';
+            if(objectiveContainer) {
+                objectiveContainer.style.display = 'block'; 
+                objectiveContainer.classList.remove('hidden');
+            }
+
+            // Mode Logic
+            if(mode === 'image') {
+                document.getElementById('btn-img').classList.add('active');
+                document.getElementById('input-image').classList.remove('hidden');
+            } else if (mode === 'story') {
+                document.getElementById('btn-story').classList.add('active');
+                document.getElementById('input-story').classList.remove('hidden');
+            } else if (mode === 'ghost') {
+                document.getElementById('btn-ghost').classList.add('active');
+                document.getElementById('input-ghost').classList.remove('hidden');
+            } else if (mode === 'text') {
+                document.getElementById('btn-txt').classList.add('active');
+                document.getElementById('input-text').classList.remove('hidden');
+            } else if (mode === 'rate') {
+                document.getElementById('btn-rate').classList.add('active');
+                document.getElementById('input-rate').classList.remove('hidden');
+                
+                // HIDE objective and tone for rating
+                if(objectiveContainer) objectiveContainer.style.display = 'none';
+                if(toneGroup) toneGroup.style.display = 'none';
+            }
+            updateButtonCost();
+        }
+
+        // --- PHASE 3: 3-Way TONE TOGGLE ---
+        function setTone(tone) {
+            currentTone = tone;
+            const container = document.getElementById('tone-toggle');
+            container.setAttribute('data-state', tone);
+        }
+
+        // --- IMAGE HANDLING ---
+        function handleFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('img-preview').src = e.target.result;
+                    document.getElementById('preview-box').style.display = 'block';
+                    document.querySelector('.upload-zone').style.display = 'none';
+                    base64Data = e.target.result.split(',')[1];
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function clearImage() {
+            document.getElementById('file-field').value = '';
+            document.getElementById('preview-box').style.display = 'none';
+            document.querySelector('.upload-zone').style.display = 'block';
+            base64Data = "";
+        }
+
+        // --- VIRAL SHARE CARD ---
+        function openShareCard(text, emojis) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set dimensions (IG Story ratio 9:16 approx or just portrait)
+            canvas.width = 1080;
+            canvas.height = 1920;
+
+            // Background - Dark Gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0a0a0a');
+            gradient.addColorStop(1, '#1a1a1a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Border
+            ctx.strokeStyle = '#D4AF37';
+            ctx.lineWidth = 20;
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+            // "The Wolf" Branding
+            ctx.fillStyle = '#D4AF37';
+            ctx.font = '900 120px Cairo';
+            ctx.textAlign = 'center';
+            ctx.fillText('الذيب', canvas.width / 2, 250);
+
+            // Quote Logic
+            ctx.fillStyle = '#EAEAEA';
+            ctx.font = '600 70px IBM Plex Sans Arabic';
+            ctx.direction = 'rtl';
+            
+            // Simple text wrap
+            const maxWidth = 800;
+            const lineHeight = 100;
+            const x = canvas.width / 2;
+            let y = canvas.height / 2 - 100;
+            
+            wrapText(ctx, text, x, y, maxWidth, lineHeight);
+
+            // Emojis
+            if(emojis && emojis !== 'undefined') {
+                ctx.font = '100px Arial'; // Standard font for emojis
+                ctx.fillText(emojis, canvas.width / 2, canvas.height / 2 + 200);
+            }
+
+            // Footer
+            ctx.fillStyle = '#666';
+            ctx.font = '400 40px Cairo';
+            ctx.fillText('Generated by Al Theeb', canvas.width / 2, canvas.height - 100);
+
+            // Show in Modal
+            const img = document.getElementById('share-canvas-img');
+            img.src = canvas.toDataURL('image/png');
+            document.getElementById('share-modal').style.display = 'flex';
+        }
+
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            var words = text.split(' ');
+            var line = '';
+
+            for(var n = 0; n < words.length; n++) {
+                var testLine = line + words[n] + ' ';
+                var metrics = context.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    context.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                }
+                else {
+                    line = testLine;
+                }
+            }
+            context.fillText(line, x, y);
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').style.display = 'none';
+        }
+
+        // --- MAIN LOGIC ---
+        async function generateRizz() {
+            // CHECK CREDITS
+            const cost = COSTS[currentMode];
+            if (credits < cost) {
+                openShop();
+                showToast("رصيدك لا يكفي! اشحن عشان تكمل.");
+                return;
+            }
+
+            const objective = document.getElementById('objective').value;
+            const vibe = document.getElementById('vibe').value;
+            const dialect = document.getElementById('dialect').value;
+            const btn = document.getElementById('go-btn');
+            const spinner = document.getElementById('spinner');
+            const resultsDiv = document.getElementById('results');
+
+            // Validation
+            if (currentMode === 'image' && !base64Data) { showToast("الرجاء رفع صورة"); return; }
+            if (currentMode === 'text' && !document.getElementById('text-field').value.trim()) { showToast("الرجاء إدخال نص"); return; }
+            if (currentMode === 'rate' && !document.getElementById('rate-field').value.trim()) { showToast("الرجاء كتابة رسالتك"); return; }
+
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            resultsDiv.innerHTML = '';
+
+            let contextData = [];
+            let sysInstruction = "";
+            let targetLanguage = dialect === 'english' ? "English" : "Arabic";
+
+            if (currentMode === 'rate') {
+                const myLine = document.getElementById('rate-field').value;
+                sysInstruction = `
+                Role: Harsh Dating Judge. Language: ${targetLanguage}.
+                Task: Rate the line (1-10), Explain briefly, Suggest improvement.
+                Output JSON: { "score": "X/10", "feedback": "...", "better_version": "..." }
+                `;
+                contextData = [{ parts: [{ text: `Rate: "${myLine}"` }] }];
+            } else {
+                // PHASE 3 PROMPT ENGINEERING
+                let modeInstruction = "";
+                if (currentTone === 'spicy') {
+                    modeInstruction = "MODE: SPICY (🌶️). Allow bold, flirty, playful, and high-risk responses. Use double entendres if appropriate.";
+                } else if (currentTone === 'mix') {
+                    modeInstruction = "MODE: MIX (⚖️). Balanced approach. Smart, witty, social intelligence. Playful but respectful. Not too dry, not too thirst.";
+                } else {
+                    modeInstruction = "MODE: HALAL (🕌). STRICTLY respectful, polite, suitable for family contexts or serious intent. NO overt sexual flirting.";
+                }
+
+                sysInstruction = `
+                Role: Charismatic Rizz Consultant.
+                Objective: ${objective}. Vibe: ${vibe}. Dialect/Language: ${dialect}.
+                ${modeInstruction}
+                
+                Task: Generate 3 responses in ${targetLanguage}.
+                IMPORTANT: For each response, provide a specific 'emojis' string.
+                
+                Output: STRICTLY a JSON array of objects: 
+                [{"text": "Line 1", "emojis": "🦁👑"}, {"text": "Line 2", "emojis": "👀✨"}, ...]
+                `;
+
+                if (currentMode === 'image') {
+                    contextData = [{
+                        parts: [
+                            { text: `Analyze image & provide 3 ${targetLanguage} responses with emojis.` },
+                            { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+                        ]
+                    }];
+                } else if (currentMode === 'story') {
+                    const type = document.getElementById('story-type').value;
+                    const context = document.getElementById('story-context').value;
+                    contextData = [{ parts: [{ text: `User wants to reply to an Instagram Story. Type: ${type}. Extra Context: ${context}. Goal: Start a conversation, provoke a response, be witty. Provide 3 ${targetLanguage} responses with emojis.` }] }];
+                } else if (currentMode === 'ghost') {
+                    const lastMsg = document.getElementById('ghost-last-msg').value;
+                    const time = document.getElementById('ghost-time').value;
+                    contextData = [{ parts: [{ text: `User is being ghosted. Last message sent by user: "${lastMsg}". Time elapsed: ${time}. Goal: Send a 'Ghostbuster' text to revive the conversation. Constraints: Non-needy, high value, playful, pattern interrupt. Provide 3 responses in ${targetLanguage} with emojis.` }] }];
+                } else {
+                    const textVal = document.getElementById('text-field').value;
+                    contextData = [{ parts: [{ text: `Context: ${textVal}. Provide 3 ${targetLanguage} responses with emojis.` }] }];
+                }
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: contextData,
+                        system_instruction: { parts: [{ text: sysInstruction }] },
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (!data.candidates) throw new Error("No response");
+                
+                // DEDUCT CREDITS ON SUCCESS
+                credits -= cost;
+                localStorage.setItem('wolf_credits', credits);
+                document.getElementById('credit-count').innerText = credits;
+
+                let rawText = data.candidates[0].content.parts[0].text;
+                const parsedData = JSON.parse(rawText);
+
+                if (currentMode === 'rate') {
+                    const ratingData = parsedData;
+                    const card = document.createElement('div');
+                    card.className = 'rizz-card';
+                    card.style.cursor = 'default';
+                    card.innerHTML = `
+                        <div class="rating-score">${ratingData.score}</div>
+                        <div>${ratingData.feedback}</div>
+                        <div class="rating-feedback"><strong>الأفضل:</strong> ${ratingData.better_version}</div>
+                        <div class="card-actions">
+                             <div class="action-btn" onclick="playTTS('${ratingData.better_version}', this)"><i class="fas fa-volume-up"></i></div>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(card);
+                } else {
+                    let items = Array.isArray(parsedData) ? parsedData : [];
+                    
+                    if(items.length === 0 && typeof parsedData === 'object') {
+                         items = [parsedData];
+                    }
+
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'rizz-card';
+                        
+                        let emojiHtml = item.emojis ? `<div class="emoji-strategy">الإيموجي المقترح: <span class="emoji-combo">${item.emojis}</span></div>` : '';
+                        // Escape single quotes for function call
+                        const safeText = item.text.replace(/'/g, "\\'"); 
+                        const safeEmojis = item.emojis ? item.emojis.replace(/'/g, "\\'") : '';
+
+                        card.innerHTML = `
+                            <div class="rizz-text" style="direction: ${dialect === 'english' ? 'ltr' : 'rtl'}; text-align: ${dialect === 'english' ? 'left' : 'right'}">${item.text}</div>
+                            ${emojiHtml}
+                            <div class="card-actions">
+                                <div class="action-btn" onclick="copyText('${safeText} ${safeEmojis}')"><i class="fas fa-copy"></i></div>
+                                <div class="action-btn" onclick="playTTS('${safeText}', this)"><i class="fas fa-volume-up"></i></div>
+                                <div class="action-btn" onclick="openShareCard('${safeText}', '${safeEmojis}')"><i class="fas fa-share-alt"></i></div>
+                            </div>
+                        `;
+                        resultsDiv.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("حدث خطأ في الاتصال");
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        function copyText(text) {
+            // Mobile-friendly copy using fallback
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast("تم النسخ!"));
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast("تم النسخ!");
+                } catch (err) {
+                    showToast("فشل النسخ");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // --- TTS FUNCTIONALITY ---
+        async function playTTS(text, btnElement) {
+            if(btnElement.classList.contains('playing')) return;
+            btnElement.classList.add('playing');
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zephyr" } } }
+                        }
+                    })
+                });
+                const data = await response.json();
+                if(!data.candidates) throw new Error("Audio gen failed");
+                const audioData = data.candidates[0].content.parts[0].inlineData.data;
+                const wavBytes = pcmToWav(base64ToArrayBuffer(audioData), 24000); 
+                const blob = new Blob([wavBytes], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                audio.onended = () => btnElement.classList.remove('playing');
+                audio.play();
+            } catch(e) {
+                console.error(e); showToast("فشل توليد الصوت"); btnElement.classList.remove('playing');
+            }
+        }
+
+        // Audio Utils
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+            return bytes.buffer;
+        }
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1; const bitsPerSample = 16;
+            const byteRate = sampleRate * numChannels * bitsPerSample / 8;
+            const blockAlign = numChannels * bitsPerSample / 8;
+            const dataSize = pcmData.byteLength;
+            const headerSize = 44; const totalSize = headerSize + dataSize;
+            const buffer = new ArrayBuffer(totalSize); const view = new DataView(buffer);
+            writeString(view, 0, 'RIFF'); view.setUint32(4, totalSize - 8, true); writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true); view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true); view.setUint16(32, blockAlign, true); view.setUint16(34, bitsPerSample, true);
+            writeString(view, 36, 'data'); view.setUint32(40, dataSize, true);
+            const pcmBytes = new Uint8Array(pcmData); const wavBytes = new Uint8Array(buffer);
+            wavBytes.set(pcmBytes, 44); return buffer;
+        }
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) { view.setUint8(offset + i, string.charCodeAt(i)); }
+        }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerHTML = `<i class="fas fa-bell"></i> ${msg}`;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 2500);
+        }
     </script>
 </body>
 </html>
+
